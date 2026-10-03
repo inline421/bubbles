@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Playtime">
+<meta name="color-scheme" content="dark">
+<meta name="description" content="A self-contained play app for very young children. No data leaves the device.">
+<title>Playtime</title>
+<!-- Asset URLs carry ?v= so a freshly fetched index.html can never be paired
+     with stale cached scripts. Bump the version on every release. -->
+<link rel="manifest" href="manifest.webmanifest?v=3.24.0">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
+<link rel="icon" href="icon-192.png">
+<link rel="stylesheet" href="style.css?v=3.24.0">
+</head>
+<body>
+
+<!-- ===== Start curtain: iOS forbids audio until a real user gesture ===== -->
+<div id="curtain" role="status">
+  <div class="curtain-inner">
+    <div class="curtain-dot"></div>
+    <p>Tap to start</p>
+  </div>
+</div>
+
+<!-- ===== Home menu (parent-facing territory) ===== -->
+<main id="menu" aria-label="Choose a game" hidden>
+  <h1 class="menu-title">Playtime</h1>
+  <div id="menu-grid" class="menu-grid"><!-- tiles injected by app.js --></div>
+  <div class="menu-foot">
+    <button type="button" id="add-photos-btn" class="ghost-btn">Add photos</button>
+    <button type="button" id="character-btn" class="ghost-btn">Set her picture</button>
+    <button type="button" id="recalib-btn" class="ghost-btn subtle" hidden>Redo tap positions</button>
+    <button type="button" id="sound-check-btn" class="ghost-btn subtle">Sound check</button>
+    <input type="file" id="character-input" accept="image/*" hidden>
+    <span class="foot-note">Photos stay on this iPad. Nothing is uploaded.</span>
+    <pre id="sound-report" hidden></pre>
+  </div>
+  <input type="file" id="photo-input" accept="image/*" multiple hidden>
+</main>
+
+<!-- ===== Play surface: one mode mounts here at a time ===== -->
+<section id="play" aria-label="Play area" hidden>
+  <canvas id="trails" aria-hidden="true"></canvas>
+  <canvas id="fx" aria-hidden="true"></canvas>
+  <div id="stage"></div>
+</section>
+
+<!-- ===== Exit guard: hold both top corners ===== -->
+<div id="guard" aria-hidden="true">
+  <div class="guard-corner" data-corner="left"></div>
+  <div class="guard-corner" data-corner="right"></div>
+  <svg id="guard-ring" viewBox="0 0 120 120" aria-hidden="true">
+    <circle class="ring-bg" cx="60" cy="60" r="52"></circle>
+    <circle class="ring-fg" cx="60" cy="60" r="52"></circle>
+  </svg>
+  <p id="guard-label">Keep holding…</p>
+  <p id="guard-hint">Hold both top corners for 3 seconds to go back</p>
+</div>
+
+<script src="config.js?v=3.24.0"></script>
+<script src="audio.js?v=3.24.0"></script>
+<script src="storage.js?v=3.24.0"></script>
+<script src="sprites.js?v=3.24.0"></script>
+<script src="mode-float.js?v=3.24.0"></script>
+<script src="mode-body.js?v=3.24.0"></script>
+<script src="mode-learn.js?v=3.24.0"></script>
+<script src="mode-scene.js?v=3.24.0"></script>
+<script src="mode-photos.js?v=3.24.0"></script>
+<script src="app.js?v=3.24.0"></script>
+</body>
+</html>

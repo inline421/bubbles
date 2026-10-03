@@ -1,0 +1,16 @@
+{
+  "name": "Playtime",
+  "short_name": "Playtime",
+  "description": "A self-contained touch toy for very young children. No data collected, no network, no ads.",
+  "start_url": "./index.html",
+  "scope": "./",
+  "display": "standalone",
+  "background_color": "#0d1524",
+  "theme_color": "#0d1524",
+  "orientation": "any",
+  "icons": [
+    { "src": "icon-192.png", "sizes": "192x192", "type": "image/png" },
+    { "src": "icon-512.png", "sizes": "512x512", "type": "image/png" },
+    { "src": "icon-1024.png", "sizes": "1024x1024", "type": "image/png" }
+  ]
+}
