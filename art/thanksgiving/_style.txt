@@ -1,0 +1,4 @@
+House style, matched to the existing stickers:
+  outline  #4a3b32, 6px on a 0 0 200 200 box, round caps and joins
+  flat fills, one darker tone for shading, no gradients
+  faces on anything alive: oval eyes, a small smile, soft pink cheeks
