@@ -89,8 +89,47 @@ window.CONFIG = {
       { id:"moon",    name:"Moon",    f:"moon",    say:"Moon", trail:"#f7e9a8" },
       { id:"hat",     name:"Hat",     f:"hat",     say:"Hat",   trail:"#b8a8d8" },
       { id:"cat",     name:"Cat",     f:"cat",     say:"Cat",    trail:"#c9ccd2" }
+    ]},
+
+    thanksgiving: { title:"Thanksgiving", hue:"#c75b39", glow:"#e8903c",
+      objectDir:"objects/thanksgiving/", objects:[
+      { id:"turkey",  name:"Turkey",  f:"turkey",  say:"Turkey", sound:"Gobble gobble", trail:"#d9772f" },
+      { id:"pie",     name:"Pie",     f:"pie",     say:"Pie",    sound:"Yummy",         trail:"#e8b06a" },
+      { id:"pumpkin", name:"Pumpkin", f:"pumpkin", say:"Pumpkin", trail:"#f08b33" },
+      { id:"corn",    name:"Corn",    f:"corn",    say:"Corn",    trail:"#f2cc4e" },
+      { id:"apple",   name:"Apple",   f:"apple",   say:"Apple",   trail:"#d94f4f" },
+      { id:"leaf",    name:"Leaf",    f:"leaf",    say:"Leaf",    trail:"#d4652f" },
+      { id:"acorn",   name:"Acorn",   f:"acorn",   say:"Acorn",   trail:"#c98b45" },
+      { id:"bread",   name:"Bread",   f:"bread",   say:"Bread",   trail:"#d9a05b" }
+    ]},
+
+    christmas: { title:"Christmas", hue:"#2f7d4f", glow:"#6cc48a",
+      objectDir:"objects/christmas/", objects:[
+      { id:"tree",      name:"Tree",      f:"tree",      say:"Tree",      trail:"#4fa649" },
+      { id:"star",      name:"Star",      f:"star",      say:"Star",      trail:"#f2cc4e" },
+      { id:"present",   name:"Present",   f:"present",   say:"Present",   trail:"#d9534f" },
+      { id:"snowman",   name:"Snowman",   f:"snowman",   say:"Snowman",   trail:"#dbe7f2" },
+      { id:"bell",      name:"Bell",      f:"bell",      say:"Bell",      sound:"Ding ding", trail:"#f2cc4e" },
+      { id:"stocking",  name:"Stocking",  f:"stocking",  say:"Stocking",  trail:"#d9534f" },
+      { id:"candycane", name:"Candy cane",f:"candycane", say:"Candy cane", trail:"#e8706c" },
+      { id:"snowflake", name:"Snowflake", f:"snowflake", say:"Snowflake", trail:"#9fd4f2" }
     ]}
   },
+
+  /* ---- the seasonal slot ------------------------------------------------
+     One tile that follows the calendar, instead of a holiday tab that sits
+     on the menu until somebody remembers to take it down. Halloween was
+     still there on 24 November; that is why this exists.
+
+     Dates are inclusive, MM-DD, read from the device's own clock, so the
+     tile turns over at midnight wherever she is. Outside every window the
+     tile is simply absent - an empty slot beats the wrong holiday. Add a
+     window here and the tile appears on its own; nothing else to change. */
+  seasons: [
+    { theme:"halloween",    from:"10-01", to:"11-01" },
+    { theme:"thanksgiving", from:"11-02", to:"11-30" },
+    { theme:"christmas",    from:"12-01", to:"12-26" }
+  ],
 
   /* ---- body parts: positions on the bundled character illustration ----
      Measured against character.webp (896x1195) and expressed as percentages,
@@ -166,7 +205,7 @@ window.CONFIG = {
   characterSrc: "character.webp",
   /* appended to the bundled image URL for the same reason every script URL
      carries one: a fresh index.html must never pair with a stale cached asset */
-  assetVersion: "?v=3.24.0",
+  assetVersion: "?v=3.25.0",
   characterAspect: 896/1195,
 
 
@@ -321,7 +360,7 @@ window.CONFIG = {
     { id:"bubbles",   theme:"bubbles",   title:"Bubbles"   },
     { id:"animals",   theme:"animals",   title:"Animals"   },
     { id:"balls",     theme:"balls",     title:"Balls"     },
-    { id:"halloween", theme:"halloween", title:"Halloween" },
+    { id:"season",    seasonal:true,     title:"Holiday"   },
     { id:"body",      title:"Me"        },
     { id:"letters",   title:"Letters"   },
     { id:"counting",  title:"Numbers"   },

@@ -31,10 +31,48 @@
   var tctx = trailC.getContext("2d");
   var fctx = fxC.getContext("2d");
 
-  /* Five of the seven menu entries are the same float engine with a
-     different theme; only Me and Photos are their own modes. */
+  /* ---- the seasonal slot -----------------------------------------------
+     One menu entry follows the calendar. CONFIG.seasons lists inclusive
+     MM-DD windows; the first one that contains today wins, and outside all
+     of them the tile is left off the menu entirely rather than showing a
+     holiday that has been and gone.
+
+     ?season=christmas on the URL forces one, so a season can be checked
+     before its date arrives. A query string is not reachable from inside
+     the app, so she cannot land on it by tapping. */
+  function seasonTheme() {
+    var forced = null;
+    try {
+      var q = /[?&]season=([a-z]+)/.exec(window.location.search || "");
+      if (q) forced = q[1];
+    } catch (e) {}
+    if (forced) return (CFG.themes && CFG.themes[forced]) ? forced : null;
+
+    var d = new Date();
+    var md = ("0" + (d.getMonth() + 1)).slice(-2) + "-" + ("0" + d.getDate()).slice(-2);
+    var win = (CFG.seasons || []).filter(function (w) {
+      return (w.from <= w.to)
+        ? (md >= w.from && md <= w.to)          /* inside one calendar year */
+        : (md >= w.from || md <= w.to);         /* a window that crosses New Year */
+    })[0];
+    return (win && CFG.themes[win.theme]) ? win.theme : null;
+  }
+
+  /* The menu as it stands today: the seasonal entry resolved to a real
+     theme, or dropped. Everything downstream reads this, not CONFIG.modes. */
+  function activeModes() {
+    var out = [];
+    (CFG.modes || []).forEach(function (m) {
+      if (!m.seasonal) { out.push(m); return; }
+      var t = seasonTheme();
+      if (t) out.push({ id:"season", theme:t, title:CFG.themes[t].title });
+    });
+    return out;
+  }
+  var MODES = activeModes();
+
   function modeFor(id) {
-    var m = CFG.modes.filter(function(x){ return x.id === id; })[0];
+    var m = MODES.filter(function(x){ return x.id === id; })[0];
     if (!m) return null;
     if (m.theme) return { impl: window.ModeFloat, theme: m.theme };
     if (m.scene) return { impl: window.ModeScene.make(m.scene) };
@@ -80,7 +118,12 @@
     /* the menu tile shows the same cut-out sticker the game uses */
     animals:   function(){ return tileImg("objects/animals/cat"); },
     balls:     function(){ return tileImg("objects/balls/soccer"); },
-    halloween: function(){ return tileImg("objects/halloween/pumpkin"); },
+    /* the seasonal tile shows the first sticker of whichever season is on */
+    season:    function(){
+      var t = seasonTheme(), th = t && CFG.themes[t];
+      if (!th || !th.objects || !th.objects.length) return '';
+      return tileImg(th.objectDir.replace(/\/$/, "") + "/" + th.objects[0].f);
+    },
     body:      function(){ return window.Sprites.draw("face"); },
     letters:   function(){ return '<svg viewBox="0 0 100 100" aria-hidden="true">' +
       '<text x="50" y="72" text-anchor="middle" font-family="system-ui,sans-serif" font-size="62" font-weight="800" fill="#4f9fd8">Aa</text></svg>'; },
@@ -120,7 +163,8 @@
 
   function buildMenu() {
     gridEl.innerHTML = "";
-    CFG.modes.forEach(function (m) {
+    MODES = activeModes();          /* re-resolved in case the app was left open overnight */
+    MODES.forEach(function (m) {
       var b = document.createElement("button");
       b.type = "button";
       b.className = "mode-tile";
