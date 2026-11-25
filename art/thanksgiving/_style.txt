@@ -1,4 +1,36 @@
-House style, matched to the existing stickers:
-  outline  #4a3b32, 6px on a 0 0 200 200 box, round caps and joins
-  flat fills, one darker tone for shading, no gradients
-  faces on anything alive: oval eyes, a small smile, soft pink cheeks
+House style, read off the existing stickers rather than guessed at.
+
+  outline   near-black #22201e. 5 units on a 0 0 200 200 box for the
+            silhouette, 4 for interior divisions, 3 for fine detail.
+            Round caps and joins.
+
+  three     every form carries a BASE colour, a DARKER shade on the side
+  tones     away from the light, and a PALE panel on the face of it. The
+            lion's muzzle, belly and paw tips; the cow's snout. That pale
+            panel is the thing the first version of this set was missing,
+            and it is most of why the originals read as drawn and the first
+            seasonal set read as flat.
+
+  faces     black oval eyes, a small mouth, optional pink cheeks. Anything
+            alive gets all three.
+
+  framing   the silhouette fills the box - about 176 of 200 across its long
+            dimension. Nothing thin, nothing floating in dead space.
+
+  shading   the light and dark panels are CURVED shapes clipped to the
+            silhouette, never a straight seam down the middle. A ruled split
+            reads as a 3D render; none of the existing stickers do it.
+
+Two renderer traps, both found the hard way:
+
+  * cairosvg will not let a child override an inherited stroke-linecap.
+    Anything needing butt caps - the candy cane's dashed stripes - must sit
+    outside a group that sets round, which is what write_plain() is for.
+    Round caps add half the stroke width to each end of every dash, so at
+    44 wide they swallow a 20-unit gap whole and the stripes vanish.
+
+  * clipPath works on fills here but not on strokes. Panels are clipped;
+    stroked stripes are not.
+
+Sources are the .svg files beside this note. draw_xmas.py and draw_thanks.py
+in art2/ regenerate them; render.py turns them into the webp the app loads.
