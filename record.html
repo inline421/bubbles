@@ -1,0 +1,228 @@
+<!doctype html>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Playtime — Recorder</title>
+<style>
+:root{
+  --bg:#f4f5f7; --card:#fff; --ink:#15181d; --ink-2:#5f6773; --ink-3:#8b94a1;
+  --rule:#dfe3e9; --ok:#2d7a52; --ok-bg:#e3f1e9; --rec:#c0392b; --rec-bg:#fae8e6;
+  --accent:#15181d;
+  --display:system-ui,-apple-system,"Segoe UI",sans-serif;
+}
+@media (prefers-color-scheme:dark){:root{
+  --bg:#101216; --card:#191c22; --ink:#eceef2; --ink-2:#9aa3b0; --ink-3:#6c7684;
+  --rule:#2b2f38; --ok:#6cc48a; --ok-bg:#15291e; --rec:#e08585; --rec-bg:#2e1a1a;
+  --accent:#eceef2; color-scheme:dark;}}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--display);
+  padding:24px 16px 56px;line-height:1.5}
+.wrap{max-width:620px;margin:0 auto}
+h1{font-size:clamp(25px,6vw,33px);margin:0 0 8px;letter-spacing:-.02em}
+p.lede{color:var(--ink-2);margin:0 0 14px;font-size:15.5px}
+.tips{background:var(--card);border:1px solid var(--rule);border-radius:10px;
+  padding:12px 15px;font-size:14px;color:var(--ink-2);margin:0 0 18px}
+.tips b{color:var(--ink)}
+button{font:inherit;cursor:pointer;border-radius:999px;border:1px solid var(--rule);
+  background:var(--card);color:var(--ink);padding:10px 18px;font-weight:600;font-size:14px}
+button:disabled{opacity:.4;cursor:default}
+button:focus-visible{outline:2.5px solid #2a5ea8;outline-offset:2px}
+#arm{background:var(--accent);color:var(--bg);border-color:var(--accent);
+  padding:13px 26px;font-size:15.5px}
+.meter{height:10px;border-radius:5px;background:var(--rule);overflow:hidden;margin:14px 0 4px}
+.meter i{display:block;height:100%;width:0;background:var(--ok);transition:width .05s linear}
+.hint{font-size:12.5px;color:var(--ink-3);min-height:16px;margin:0 0 18px}
+.item{background:var(--card);border:1px solid var(--rule);border-radius:11px;
+  padding:14px 16px;margin-bottom:11px}
+.item.done{border-color:var(--ok)}
+.item h2{font-size:17px;margin:0 0 2px}
+.item .say{color:var(--ink-2);font-size:14px;margin:0 0 11px}
+.item .say em{color:var(--ink);font-style:normal;font-weight:600}
+.row{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+.rec{background:var(--rec-bg);border-color:var(--rec);color:var(--rec)}
+.rec.on{background:var(--rec);color:#fff}
+.stat{font-size:12.5px;color:var(--ink-3);margin-left:2px}
+.stat.ok{color:var(--ok)}
+.foot{margin-top:22px;padding-top:16px;border-top:1px solid var(--rule);
+  font-size:13.5px;color:var(--ink-3)}
+.err{background:var(--rec-bg);border:1px solid var(--rec);color:var(--rec);
+  border-radius:9px;padding:11px 14px;font-size:14px;margin-bottom:16px}
+</style>
+
+<div class="wrap">
+<h1>Playtime — Recorder</h1>
+<p class="lede">Record the sounds in your own voice. Nothing is uploaded anywhere — each take saves straight to your Downloads folder and stays on this machine.</p>
+
+<div class="tips">
+  <b>Before you start:</b> quiet room, phone or laptop about a hand's width from your mouth,
+  and leave a beat of silence at the start and end of each take — I trim that off automatically.
+  Re-record as many times as you like; only the last take of each is saved.
+</div>
+
+<div id="err"></div>
+<button id="arm" type="button">Turn on the microphone</button>
+<div class="meter"><i id="lvl"></i></div>
+<p class="hint" id="hint">The bar should jump when you talk. If it stays flat, the wrong input is selected.</p>
+
+<div id="list"></div>
+
+<div class="foot" id="foot"></div>
+</div>
+
+<script>
+/* Each take is captured with MediaRecorder and saved as a file. No server,
+   no upload: this page is static and never sends the audio anywhere. */
+var ITEMS = [
+  { id:"hohoho", title:"Santa — ho ho ho",
+    say:"A big, slow, jolly <em>ho ho ho</em> — like you're laughing, not reading it out. Deep as you can, four or five of them running downhill." },
+  { id:"sleighbells", title:"Sleigh bells",
+    say:"If there are jingle bells in the house, shake them for about <em>two seconds</em> — a few shakes, not one. Skip this one if you haven't got any." },
+  { id:"gobble", title:"Turkey gobble <span style='font-weight:400;color:var(--ink-3)'>(optional)</span>",
+    say:"Only if you fancy it — we already have one you picked. A <em>gobble-obble-obble</em>, fast and bubbling." }
+];
+
+var stream = null, ctx = null, analyser = null, armed = false;
+var takes = {};
+
+function show(msg){
+  document.getElementById("err").innerHTML = msg ? '<div class="err">'+msg+'</div>' : "";
+}
+
+document.getElementById("arm").addEventListener("click", function(){
+  if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia){
+    show("This browser won't give a page microphone access. Try Chrome or Edge."); return;
+  }
+  navigator.mediaDevices.getUserMedia({ audio:{
+      echoCancellation:false, noiseSuppression:false, autoGainControl:false } })
+    .then(function(s){
+      stream = s; armed = true; show("");
+      document.getElementById("arm").textContent = "Microphone is on";
+      document.getElementById("arm").disabled = true;
+      ctx = new (window.AudioContext||window.webkitAudioContext)();
+      /* A context can come up suspended even when it was created inside a
+         click. Left suspended the analyser sees nothing and the level bar
+         stays flat while the recording is in fact fine - which would tell
+         you the microphone is dead when it is not. */
+      var go = (ctx.state === "suspended") ? ctx.resume() : Promise.resolve();
+      go.then(function(){
+        analyser = ctx.createAnalyser(); analyser.fftSize = 1024;
+        ctx.createMediaStreamSource(s).connect(analyser);
+        meter();
+        if (ctx.state !== "running")
+          document.getElementById("hint").textContent =
+            "Level meter unavailable in this browser — recording still works, play each take back to check it.";
+        render();
+      });
+    })
+    .catch(function(e){
+      show("The microphone was blocked (" + (e && e.name) + "). Allow it for this site in the padlock menu, then press the button again.");
+    });
+});
+
+function meter(){
+  /* a timer, not requestAnimationFrame: rAF is throttled to nothing in a
+     background tab, and a frozen level bar reads as a dead microphone */
+  var buf = new Uint8Array(analyser.fftSize);
+  setInterval(function(){
+    analyser.getByteTimeDomainData(buf);
+    var peak = 0;
+    for (var i=0;i<buf.length;i++){ var v = Math.abs(buf[i]-128)/128; if (v>peak) peak=v; }
+    var el = document.getElementById("lvl");
+    var pct = Math.min(100, peak * 140);
+    window.__peakSeen = Math.max(window.__peakSeen || 0, pct);   /* for tests */
+    el.style.width = pct.toFixed(0) + "%";
+    el.style.background = peak > 0.95 ? "var(--rec)" : "var(--ok)";   /* clipping */
+  }, 40);
+}
+
+function ext(type){
+  if (/ogg/.test(type)) return "ogg";
+  if (/mp4|m4a|aac/.test(type)) return "m4a";
+  return "webm";
+}
+
+function render(){
+  var list = document.getElementById("list");
+  list.innerHTML = "";
+  ITEMS.forEach(function(it){
+    var card = document.createElement("div");
+    card.className = "item" + (takes[it.id] ? " done" : "");
+    card.innerHTML = '<h2>'+it.title+'</h2><p class="say">'+it.say+'</p>';
+    var row = document.createElement("div"); row.className = "row";
+
+    var rec = document.createElement("button");
+    rec.className = "rec"; rec.type = "button";
+    rec.textContent = takes[it.id] ? "Record again" : "Record";
+    rec.disabled = !armed;
+
+    var play = document.createElement("button");
+    play.type = "button"; play.textContent = "Play it back";
+    play.disabled = !takes[it.id];
+    play.addEventListener("click", function(){
+      var a = new Audio(URL.createObjectURL(takes[it.id].blob)); a.play();
+    });
+
+    var save = document.createElement("button");
+    save.type = "button"; save.textContent = "Save";
+    save.disabled = !takes[it.id];
+    save.addEventListener("click", function(){ saveOne(it.id); });
+
+    var stat = document.createElement("span");
+    stat.className = "stat" + (takes[it.id] ? " ok" : "");
+    stat.textContent = takes[it.id]
+      ? ("recorded — " + takes[it.id].secs.toFixed(1) + "s") : "";
+
+    var mr = null, t0 = 0;
+    rec.addEventListener("click", function(){
+      if (mr && mr.state === "recording"){ mr.stop(); return; }
+      var chunks = [];
+      try { mr = new MediaRecorder(stream); }
+      catch(e){ show("This browser can't record audio (" + e.name + ")."); return; }
+      mr.ondataavailable = function(e){ if (e.data && e.data.size) chunks.push(e.data); };
+      mr.onstop = function(){
+        var blob = new Blob(chunks, { type: mr.mimeType || "audio/webm" });
+        takes[it.id] = { blob: blob, secs: (Date.now()-t0)/1000, type: mr.mimeType || "audio/webm" };
+        render(); updateFoot();
+      };
+      t0 = Date.now();
+      mr.start();
+      rec.classList.add("on"); rec.textContent = "Stop";
+      play.disabled = true; save.disabled = true;
+      stat.className = "stat"; stat.textContent = "recording…";
+      /* hard stop so a forgotten tab does not record for an hour */
+      setTimeout(function(){ if (mr && mr.state === "recording") mr.stop(); }, 20000);
+    });
+
+    row.appendChild(rec); row.appendChild(play); row.appendChild(save); row.appendChild(stat);
+    card.appendChild(row);
+    list.appendChild(card);
+  });
+  updateFoot();
+}
+
+function saveOne(id){
+  var t = takes[id]; if (!t) return;
+  var a = document.createElement("a");
+  a.href = URL.createObjectURL(t.blob);
+  a.download = "playtime-" + id + "." + ext(t.type);
+  document.body.appendChild(a); a.click(); a.remove();
+}
+
+function updateFoot(){
+  var done = Object.keys(takes);
+  var foot = document.getElementById("foot");
+  if (!done.length){ foot.textContent = "Nothing recorded yet."; return; }
+  foot.innerHTML = "";
+  var b = document.createElement("button");
+  b.type = "button"; b.textContent = "Save all " + done.length + " to Downloads";
+  b.addEventListener("click", function(){
+    done.forEach(function(id, i){ setTimeout(function(){ saveOne(id); }, i*500); });
+  });
+  foot.appendChild(b);
+  var p = document.createElement("p");
+  p.style.marginTop = "12px";
+  p.textContent = "Saved as playtime-<name> in your Downloads folder. Tell Claude when they're there.";
+  foot.appendChild(p);
+}
+
+render();
+</script>
