@@ -112,10 +112,6 @@ window.CONFIG = {
       { id:"star",      name:"Star",      f:"star",      say:"Star",      trail:"#f2cc4e" },
       { id:"present",   name:"Present",   f:"present",   say:"Present",   trail:"#d9534f" },
       { id:"snowman",   name:"Snowman",   f:"snowman",   say:"Snowman",   trail:"#dbe7f2" },
-      /* No sfx on these two yet: the sleigh bells and the ho-ho-ho are still
-         being worked on and neither take was approved, so they say their
-         name and stop rather than play something wrong. The turkey keeps
-         its gobble - that one was picked. */
       { id:"bell",      name:"Sleigh bells", f:"bell",   say:"Sleigh bells", trail:"#f2cc4e" },
       { id:"stocking",  name:"Stocking",  f:"stocking",  say:"Stocking",  trail:"#d9534f" },
       { id:"candycane", name:"Candy cane",f:"candycane", say:"Candy cane", trail:"#e8706c" },
@@ -213,7 +209,7 @@ window.CONFIG = {
   characterSrc: "character.webp",
   /* appended to the bundled image URL for the same reason every script URL
      carries one: a fresh index.html must never pair with a stale cached asset */
-  assetVersion: "?v=3.29.0",
+  assetVersion: "?v=3.32.0",
   characterAspect: 896/1195,
 
 
@@ -378,6 +374,7 @@ window.CONFIG = {
     { id:"scene-ocean",  scene:"ocean",  title:"Ocean"         },
     { id:"scene-jungle", scene:"jungle", title:"Jungle"        },
     { id:"scene-town",   scene:"town",   title:"Things That Go" },
+    { id:"findus",    title:"Find Us!"  },
     { id:"photos",    title:"Photos"    }
   ]
 };

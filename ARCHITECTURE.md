@@ -136,3 +136,39 @@ from an older copy of config.js and index.html, which silently removed the Find 
 tile row and its <script> tag. Before uploading any shared file (config.js,
 index.html, app.js, style.css, voice/manifest.json), fetch the current version from
 main and edit that, then diff against main to make sure you only add your change.
+
+## Two sessions, one repo — the rule that would have prevented all of this
+
+Neither session can `git push`: Anthropic's proxy refuses this repo, so both
+of us upload whole files through github.com/.../upload/main. **A whole-file
+upload replaces what is on main with your local copy.** If your local copy
+predates the other session's work, their work is gone and nothing warns you.
+
+That is how the Find Us! tile was deleted three times — 3.27.0, 3.28.0 and
+3.29.0 — all three by the seasonal-content session uploading a `config.js`
+and `index.html` it had edited locally hours earlier. The third time also
+rolled the version backwards from 3.31.0 to 3.29.0.
+
+**Before you upload ANY file, fetch the current one from main and apply your
+change to that copy.** Not to the copy in your working tree.
+
+    curl -s https://raw.githubusercontent.com/inline421/bubbles/main/config.js -o config.js
+    # now make your edit, then upload
+
+**Then check you did not drop the other session's work:**
+
+    grep -c findus config.js index.html app.js      # expect 1 1 3
+    grep -o '?v=[0-9.]*' index.html | sort -u       # expect exactly ONE version
+    grep assetVersion config.js                      # must match it
+
+`lab/findustest.mjs` does all of that in a real browser and fails loudly.
+Run it before every upload that touches config.js or index.html.
+
+**The version number lives on main, not in your tree.** Read it off main and
+go up by one. Never bump from your local copy — that is how 3.31.0 became
+3.29.0.
+
+**Shared files, highest risk first:** `config.js`, `index.html` (both
+sessions edit these), `voice/manifest.json` (both add words), `app.js`,
+`ARCHITECTURE.md`. Files under `objects/`, `scenes/`, `findus/`, `sfx/` and
+the `mode-*.js` modules belong to one session each and are safe.
