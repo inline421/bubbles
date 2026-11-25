@@ -111,3 +111,14 @@ curtain (the menu is `display:none` until it lifts), click the actual tile,
 and assert on something that proves you are on the right screen — which
 files the browser fetched, not just that no error was thrown. A test that
 checks the wrong screen for errors will pass and tell you nothing.
+
+## Find Us! (added 3.27.0)
+
+`mode-findus.js` / `window.ModeFindUs` — Sabrina's search-and-find book.
+Intro page + 7 picture pages in `findus/*.webp` (1254x1254). Tap boxes are in
+`PAGES` in that file, in page-image pixels; if a page image is rebuilt with
+people moved, update its boxes. Names go through `Sound.say` and are baked
+(`voice/fu-*.mp3`, piper `en_US-kathleen-low`, CC0). Each name has a 4s
+cooldown plus a 1.2s lock between names. Page turns are hold-to-turn buttons
+in the bottom corners, outside the zoom layer so they never move; the top
+corners stay free for the exit guard. Pinch zoom 1-4x, one-finger pan.

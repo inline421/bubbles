@@ -209,7 +209,7 @@ window.CONFIG = {
   characterSrc: "character.webp",
   /* appended to the bundled image URL for the same reason every script URL
      carries one: a fresh index.html must never pair with a stale cached asset */
-  assetVersion: "?v=3.26.0",
+  assetVersion: "?v=3.27.0",
   characterAspect: 896/1195,
 
 
@@ -374,6 +374,7 @@ window.CONFIG = {
     { id:"scene-ocean",  scene:"ocean",  title:"Ocean"         },
     { id:"scene-jungle", scene:"jungle", title:"Jungle"        },
     { id:"scene-town",   scene:"town",   title:"Things That Go" },
+    { id:"findus",    title:"Find Us!"  },
     { id:"photos",    title:"Photos"    }
   ]
 };

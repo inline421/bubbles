@@ -82,6 +82,7 @@
     if (id === "colours")  return { impl: window.ModeLearn.colours };
     if (id === "shapes")   return { impl: window.ModeLearn.shapes };
     if (id === "photos") return { impl: window.ModePhotos };
+    if (id === "findus") return { impl: window.ModeFindUs };
     return null;
   }
 
@@ -154,6 +155,7 @@
       '<rect x="0" y="66" width="100" height="34" fill="#9aa5b1"/>' +
       '<path d="M14 62 h44 l14 -14 h10 q8 0 8 8 v6 h8 v14 H14 Z" fill="#d8443c"/>' +
       '<circle cx="32" cy="78" r="8" fill="#2a2f36"/><circle cx="70" cy="78" r="8" fill="#2a2f36"/></svg>'; },
+    findus:    function(){ return tileImg("findus/tile"); },
     photos:    function(){ return '<svg viewBox="0 0 100 100" aria-hidden="true">' +
       '<rect x="10" y="20" width="80" height="60" rx="9" fill="#fbfbfd"/>' +
       '<circle cx="32" cy="40" r="7" fill="#f0a244"/>' +
@@ -169,7 +171,7 @@
       b.type = "button";
       b.className = "mode-tile";
       var th = m.theme ? CFG.themes[m.theme] : null;
-      b.style.setProperty("--hue", (th && th.hue) || (m.id === "photos" ? "#6cc46e" : "#e86ba4"));
+      b.style.setProperty("--hue", (th && th.hue) || (m.id === "photos" ? "#6cc46e" : m.id === "findus" ? "#f0a244" : "#e86ba4"));
       b.setAttribute("aria-label", m.title);
       b.innerHTML = '<span class="mode-art" data-mode="' + m.id + '">' +
                       ((TILE_ART[m.id] && TILE_ART[m.id]()) || '') + '</span>' +

@@ -473,3 +473,43 @@ body{
 #mouse-back:hover{background:#fff}
 #mouse-back:focus-visible{outline:3px solid #ffce4a;outline-offset:2px}
 #mouse-back[hidden]{display:none}
+
+/* ===== Find Us (search-and-find book) ===== */
+.fu-view{position:absolute;inset:0;overflow:hidden;background:#f6efe2;touch-action:none;
+  -webkit-user-select:none;user-select:none;-webkit-touch-callout:none}
+.fu-wrap{position:absolute;transform-origin:50% 50%;will-change:transform}
+.fu-img{display:block;width:100%;height:100%;object-fit:contain;pointer-events:none;-webkit-user-drag:none}
+.fu-hots{position:absolute;inset:0}
+.fu-hot{position:absolute;border-radius:18px}
+.fu-hot.fu-found{box-shadow:0 0 0 4px rgba(255,206,74,.95),0 0 28px 8px rgba(255,206,74,.55);
+  animation:fuGlow 1.6s ease-out forwards}
+@keyframes fuGlow{0%{opacity:1}80%{opacity:1}100%{box-shadow:none}}
+.fu-bubble{position:absolute;z-index:5;transform:translate(-50%,-100%);pointer-events:none;
+  background:#fff;color:#20304a;font:800 34px/1 -apple-system,BlinkMacSystemFont,system-ui,sans-serif;
+  padding:12px 22px;border-radius:999px;box-shadow:0 8px 24px -8px rgba(0,0,0,.45)}
+.fu-bubble.pop{animation:fuPop .35s cubic-bezier(.3,1.6,.5,1)}
+@keyframes fuPop{from{transform:translate(-50%,-100%) scale(.4)}to{transform:translate(-50%,-100%) scale(1)}}
+.fu-nav{position:absolute;z-index:6;bottom:calc(18px + env(safe-area-inset-bottom));width:104px;height:104px;
+  padding:0;border:none;border-radius:50%;background:rgba(32,48,74,.72);cursor:pointer;touch-action:none;
+  -webkit-tap-highlight-color:transparent}
+.fu-next{right:18px}
+.fu-prev{left:18px;width:84px;height:84px;opacity:.75}
+.fu-nav svg{width:100%;height:100%;display:block}
+.fu-ring-bg{fill:none;stroke:rgba(255,255,255,.25);stroke-width:7}
+.fu-ring-fg{fill:none;stroke:#ffce4a;stroke-width:7;transform:rotate(-90deg);transform-origin:50% 50%}
+.fu-nav.holding{background:rgba(32,48,74,.92)}
+.fu-dots{position:absolute;z-index:6;left:50%;transform:translateX(-50%);bottom:calc(22px + env(safe-area-inset-bottom));
+  display:flex;gap:8px;pointer-events:none}
+.fu-dot{width:10px;height:10px;border-radius:50%;background:rgba(32,48,74,.25)}
+.fu-dot.on{background:#20304a}
+.fu-intro{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;
+  background:linear-gradient(#fff7e6,#fde6c8);border-radius:6px;text-align:center;color:#20304a;
+  font-family:-apple-system,BlinkMacSystemFont,system-ui,sans-serif}
+.fu-title{margin:6% 0 3%;font-size:clamp(26px,5.4vmin,60px);font-weight:800}
+.fu-cast{display:flex;align-items:flex-end;justify-content:center;gap:3%;height:58%;width:92%}
+.fu-person{position:relative;display:flex;flex-direction:column;align-items:center;justify-content:flex-end;height:100%}
+.fu-person img{max-height:86%;max-width:100%;object-fit:contain;pointer-events:none;-webkit-user-drag:none}
+.fu-person[data-who="sabrina"] img{max-height:48%}
+.fu-person[data-who="indie"] img{max-height:40%}
+.fu-person span{margin-top:6px;font-size:clamp(18px,3.4vmin,36px);font-weight:800}
+.fu-sub{margin:3% 0 0;font-size:clamp(18px,3.6vmin,40px);font-weight:700;line-height:1.3}
