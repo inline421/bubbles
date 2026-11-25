@@ -93,7 +93,10 @@ window.CONFIG = {
 
     thanksgiving: { title:"Thanksgiving", hue:"#c75b39", glow:"#e8903c",
       objectDir:"objects/thanksgiving/", objects:[
-      { id:"turkey",  name:"Turkey",  f:"turkey",  say:"Turkey", sound:"Gobble gobble", trail:"#d9772f" },
+      /* the gobble, the jingle and the ho-ho-ho are recordings now, not the
+         narrator reading the noise out, so these three carry an `sfx` and
+         no spoken `sound`. */
+      { id:"turkey",  name:"Turkey",  f:"turkey",  say:"Turkey", sfx:"gobble", trail:"#d9772f" },
       { id:"pie",     name:"Pie",     f:"pie",     say:"Pie",    sound:"Yummy",         trail:"#e8b06a" },
       { id:"pumpkin", name:"Pumpkin", f:"pumpkin", say:"Pumpkin", trail:"#f08b33" },
       { id:"corn",    name:"Corn",    f:"corn",    say:"Corn",    trail:"#f2cc4e" },
@@ -109,10 +112,11 @@ window.CONFIG = {
       { id:"star",      name:"Star",      f:"star",      say:"Star",      trail:"#f2cc4e" },
       { id:"present",   name:"Present",   f:"present",   say:"Present",   trail:"#d9534f" },
       { id:"snowman",   name:"Snowman",   f:"snowman",   say:"Snowman",   trail:"#dbe7f2" },
-      { id:"bell",      name:"Bell",      f:"bell",      say:"Bell",      sound:"Ding ding", trail:"#f2cc4e" },
+      { id:"bell",      name:"Sleigh bells", f:"bell",   say:"Sleigh bells", sfx:"sleighbells", trail:"#f2cc4e" },
       { id:"stocking",  name:"Stocking",  f:"stocking",  say:"Stocking",  trail:"#d9534f" },
       { id:"candycane", name:"Candy cane",f:"candycane", say:"Candy cane", trail:"#e8706c" },
-      { id:"snowflake", name:"Snowflake", f:"snowflake", say:"Snowflake", trail:"#9fd4f2" }
+      { id:"snowflake", name:"Snowflake", f:"snowflake", say:"Snowflake", trail:"#9fd4f2" },
+      { id:"santa",     name:"Santa",     f:"santa",     say:"Santa",     sfx:"hohoho",  trail:"#d9534f" }
     ]}
   },
 
@@ -205,7 +209,7 @@ window.CONFIG = {
   characterSrc: "character.webp",
   /* appended to the bundled image URL for the same reason every script URL
      carries one: a fresh index.html must never pair with a stale cached asset */
-  assetVersion: "?v=3.25.0",
+  assetVersion: "?v=3.26.0",
   characterAspect: 896/1195,
 
 
