@@ -374,7 +374,6 @@ window.CONFIG = {
     { id:"scene-ocean",  scene:"ocean",  title:"Ocean"         },
     { id:"scene-jungle", scene:"jungle", title:"Jungle"        },
     { id:"scene-town",   scene:"town",   title:"Things That Go" },
-    { id:"findus",    title:"Find Us!"  },
     { id:"photos",    title:"Photos"    }
   ]
 };
