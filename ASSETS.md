@@ -21,7 +21,7 @@ delete accounts, and licences get changed retroactively.
 | File | Type | Source | Licence | Commercial OK | Verified |
 |------|------|--------|---------|---------------|----------|
 | `voice/*.mp3` (177) | Audio | Synthesised with piper `en_US-lessac-medium` | Lessac Blizzard 2013 corpus — **research only**, commercial use expressly excluded | **NO** | 2026-10-01 |
-| `voice/fu-*.mp3` (5) | Audio | Synthesised with piper `en_US-kathleen-low` (Find Us! names) | rhasspy/dataset-voice-kathleen — **CC0** | yes | 2026-11-24 |
+| `voice/fu-*.mp3` (5) | Audio | Synthesised with piper `en_US-lessac-medium` (Find Us! names; personal-only feature) | Lessac Blizzard 2013 corpus — **research only** | **NO** | 2026-11-25 |
 | `findus/*.webp` | Images | Family photos turned into illustrations for the private Find Us! book (AI-assisted: Qwen, Dreamina) | Personal family content — **not for the commercial build** | **NO** | 2026-11-24 |
 | `sfx/*.mp3` (46) | Audio | BigSoundBank / Wikimedia Commons / Freesound, filtered to CC0 at download time. Commits of 30 Sept–1 Oct record "CC0 / public domain" and "CC0, freesound"; originals still on the author's PC under `Downloads\pt2`–`pt7`, `pt_sfx` with dates | **Unrecorded per file.** No source URL or uploader was logged; the files carry no useful metadata | **UNPROVEN** | — |
 | `sfx/shark.mp3` | Audio | Synthesised by us — but reproduces the two-note *Jaws* motif | Our recording; the underlying **composition** is not ours | **NO** | 2026-10-01 |

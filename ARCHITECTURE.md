@@ -1,5 +1,11 @@
 # Playtime — how the app is put together
 
+> **STOP — read before uploading config.js or index.html.** Twice on 11/25 (3.27.0 and
+> 3.28.0 bumps) a stale copy was uploaded and silently deleted the Find Us! tile
+> (`{ id:"findus" ... }` in CONFIG.modes and `<script src="mode-findus.js">`). Fetch
+> main first, edit that copy, and `grep findus config.js index.html` before committing.
+
+
 A single-page, offline touch toy for a toddler. No build step, no framework,
 no network at runtime. Open `index.html` and it runs.
 
@@ -118,7 +124,7 @@ checks the wrong screen for errors will pass and tell you nothing.
 Intro page + 7 picture pages in `findus/*.webp` (1254x1254). Tap boxes are in
 `PAGES` in that file, in page-image pixels; if a page image is rebuilt with
 people moved, update its boxes. Names go through `Sound.say` and are baked
-(`voice/fu-*.mp3`, piper `en_US-kathleen-low`, CC0). Each name has a 4s
+(`voice/fu-*.mp3`, piper `en_US-lessac-medium`, length_scale 1.1, 32 kHz 96k — same voice as the rest of the app; Jarred rejected kathleen-low on sound). Each name has a 4s
 cooldown plus a 1.2s lock between names. Page turns are hold-to-turn buttons
 in the bottom corners, outside the zoom layer so they never move; the top
 corners stay free for the exit guard. Pinch zoom 1-4x, one-finger pan.
