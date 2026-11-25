@@ -122,3 +122,11 @@ people moved, update its boxes. Names go through `Sound.say` and are baked
 cooldown plus a 1.2s lock between names. Page turns are hold-to-turn buttons
 in the bottom corners, outside the zoom layer so they never move; the top
 corners stay free for the exit guard. Pinch zoom 1-4x, one-finger pan.
+
+## Before you upload: start from the live copy (3.28.0)
+
+The web upload replaces whole files. On 11/25 at 7:27 AM a 3.27.0 bump was uploaded
+from an older copy of config.js and index.html, which silently removed the Find Us!
+tile row and its <script> tag. Before uploading any shared file (config.js,
+index.html, app.js, style.css, voice/manifest.json), fetch the current version from
+main and edit that, then diff against main to make sure you only add your change.
