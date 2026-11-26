@@ -498,6 +498,12 @@ body{
 .fu-ring-bg{fill:none;stroke:rgba(255,255,255,.25);stroke-width:7}
 .fu-ring-fg{fill:none;stroke:#ffce4a;stroke-width:7;transform:rotate(-90deg);transform-origin:50% 50%}
 .fu-nav.holding{background:rgba(32,48,74,.92)}
+.fu-wrap.fu-anim{transition:transform .25s ease-out}
+.fu-zoomout{position:absolute;z-index:7;left:50%;transform:translateX(-50%);bottom:calc(48px + env(safe-area-inset-bottom));
+  width:92px;height:92px;padding:10px;border:none;border-radius:50%;background:rgba(32,48,74,.8);cursor:pointer;
+  touch-action:none;-webkit-tap-highlight-color:transparent;box-shadow:0 6px 18px -6px rgba(0,0,0,.5)}
+.fu-zoomout[hidden]{display:none}
+.fu-zoomout svg{width:100%;height:100%;display:block}
 .fu-dots{position:absolute;z-index:6;left:50%;transform:translateX(-50%);bottom:calc(22px + env(safe-area-inset-bottom));
   display:flex;gap:8px;pointer-events:none}
 .fu-dot{width:10px;height:10px;border-radius:50%;background:rgba(32,48,74,.25)}

@@ -11,6 +11,8 @@
    - Next / back are HOLD buttons fixed to the bottom corners. They sit
      outside the zoomed picture, so they never move when she zooms. A quick
      tap does nothing; holding for 0.7s turns the page.
+   - Zoomed in, a magnifier button (bottom centre) glides back to the whole
+     picture, and a pinch that ends close to 1x finishes zooming out.
    - The top corners stay free for the app's own exit guard.
    =========================================================================== */
 window.ModeFindUs = (function () {
@@ -42,7 +44,7 @@ window.ModeFindUs = (function () {
   var SIZE = 1254;
   var COOLDOWN_MS = 4000, LOCK_MS = 1200, HOLD_MS = 700, MAX_ZOOM = 4;
 
-  var host, view, wrap, img, hotLayer, bubble, nextBtn, prevBtn, dotsEl;
+  var host, view, wrap, img, hotLayer, bubble, nextBtn, prevBtn, dotsEl, zoomBtn;
   var page = 0;                 /* 0 = intro, 1..n = picture pages */
   var scale = 1, tx = 0, ty = 0;
   var pointers = new Map(), pinch = null, pan = null, tapStart = null;
@@ -71,6 +73,7 @@ window.ModeFindUs = (function () {
   }
   function apply() {
     if (wrap) wrap.style.transform = "translate3d(" + tx + "px," + ty + "px,0) scale(" + scale + ")";
+    if (zoomBtn) zoomBtn.hidden = scale <= 1.01;
   }
   function constrain() {
     if (!wrap || !view) return;
@@ -82,6 +85,34 @@ window.ModeFindUs = (function () {
     ty = Math.min(my, Math.max(-my, ty));
   }
   function resetZoom() { scale = 1; tx = 0; ty = 0; apply(); }
+  /* glide back to the whole picture (zoom-out button, or a pinch that ends near 1x) */
+  function easeHome() {
+    if (!wrap) return;
+    wrap.classList.add("fu-anim");
+    resetZoom();
+    setTimeout(function () { if (wrap) wrap.classList.remove("fu-anim"); }, 300);
+  }
+  /* forget every finger: iOS sometimes never sends pointerup for a lifted
+     finger, and a stale one left in the map turns the next touch into a
+     lopsided "pinch" that can't zoom back out */
+  /* iOS can still pinch-zoom the WHOLE PAGE (not just the picture). Then the
+     buttons slide off-screen and nothing in the page can zoom back out.
+     Re-applying the viewport tag with maximum-scale=1 makes iOS snap the
+     page back to 1x; we do that whenever the page is found zoomed. */
+  function pageZoomed() { var v = window.visualViewport; return !!(v && v.scale > 1.01); }
+  function unzoomPage() {
+    var m = document.querySelector('meta[name="viewport"]');
+    if (!m) return;
+    var base = "width=device-width, initial-scale=1, viewport-fit=cover";
+    m.setAttribute("content", base + ", maximum-scale=1.0, minimum-scale=1.0, user-scalable=0");
+    setTimeout(function () {
+      m.setAttribute("content", base + ", maximum-scale=1, user-scalable=no");
+      try { window.scrollTo(0, 0); } catch (e) {}
+    }, 60);
+  }
+  function blockPageZoom(e) { if (e.touches && e.touches.length > 1) e.preventDefault(); }
+  function onViewport() { if (pageZoomed() && pointers.size === 0) unzoomPage(); }
+  function clearFingers() { pointers.clear(); pinch = null; pan = null; tapStart = null; }
 
   /* ---- pages ---------------------------------------------------------- */
   function render() {
@@ -169,8 +200,10 @@ window.ModeFindUs = (function () {
   /* ---- gestures (pinch / pan / tap) ----------------------------------- */
   function dist(a, b) { return Math.hypot(a.x - b.x, a.y - b.y); }
   function onDown(e) {
-    if (e.target.closest && e.target.closest(".fu-nav")) return;
+    if (e.target.closest && e.target.closest(".fu-nav,.fu-zoomout")) return;
     e.preventDefault();
+    if (e.isPrimary) clearFingers();          /* a new gesture starts clean */
+    if (wrap) wrap.classList.remove("fu-anim");
     try { view.setPointerCapture(e.pointerId); } catch (er) {}
     pointers.set(e.pointerId, { x:e.clientX, y:e.clientY });
     var p = [...pointers.values()];
@@ -210,6 +243,7 @@ window.ModeFindUs = (function () {
     if (pointers.size === 0) {
       if (tapStart && Date.now() - tapStart.t < 600) tapAt(e.clientX, e.clientY);
       tapStart = null; pan = null; pinch = null;
+      if (scale > 1.001 && scale < 1.2) easeHome();   /* almost out: finish the job */
     } else if (pointers.size === 1) {
       pinch = null;
       var q = [...pointers.values()][0];
@@ -265,25 +299,41 @@ window.ModeFindUs = (function () {
       '<div class="fu-bubble" hidden></div>' +
       navHTML("fu-prev", "M58 30 L38 50 L58 70") +
       navHTML("fu-next", "M42 30 L62 50 L42 70") +
+      '<button type="button" class="fu-zoomout" aria-label="Zoom out" hidden>' +
+        '<svg viewBox="0 0 100 100" aria-hidden="true"><circle cx="44" cy="44" r="22" fill="none" stroke="#fff" stroke-width="8"/>' +
+        '<path d="M60 60 L76 76 M33 44 L55 44" stroke="#fff" stroke-width="9" stroke-linecap="round"/></svg></button>' +
       '<div class="fu-dots"></div>';
     host.stage.appendChild(view);
     wrap = view.querySelector(".fu-wrap"); img = view.querySelector(".fu-img");
     hotLayer = view.querySelector(".fu-hots"); bubble = view.querySelector(".fu-bubble");
     nextBtn = view.querySelector(".fu-next"); prevBtn = view.querySelector(".fu-prev");
     dotsEl = view.querySelector(".fu-dots");
+    zoomBtn = view.querySelector(".fu-zoomout");
+    zoomBtn.addEventListener("pointerdown", function (e) { e.preventDefault(); e.stopPropagation(); clearFingers(); easeHome(); unzoomPage(); });
     holdButton(nextBtn, 1); holdButton(prevBtn, -1);
     view.addEventListener("pointerdown", onDown, { passive:false });
     view.addEventListener("pointermove", onMove, { passive:false });
     view.addEventListener("pointerup", onUp);
     view.addEventListener("pointercancel", onUp);
+    view.addEventListener("lostpointercapture", onUp);
+    view.addEventListener("touchend", function (e) { if (e.touches.length === 0) { clearFingers(); if (pageZoomed()) unzoomPage(); } }, { passive:true });
+    view.addEventListener("touchcancel", function (e) { if (e.touches.length === 0) clearFingers(); }, { passive:true });
+    /* two fingers must never reach Safari's own page zoom */
+    document.addEventListener("touchstart", blockPageZoom, { passive:false });
+    document.addEventListener("touchmove", blockPageZoom, { passive:false });
+    if (window.visualViewport) window.visualViewport.addEventListener("resize", onViewport);
+    if (pageZoomed()) unzoomPage();
     fit(); render();
     /* the intro greets her once */
     setTimeout(function () { try { window.Sound.say("Can you find us?"); } catch (e) {} }, 500);
   }
   function stop() {
     hideBubble();
+    document.removeEventListener("touchstart", blockPageZoom, { passive:false });
+    document.removeEventListener("touchmove", blockPageZoom, { passive:false });
+    if (window.visualViewport) window.visualViewport.removeEventListener("resize", onViewport);
     if (view && view.parentNode) view.parentNode.removeChild(view);
-    view = wrap = img = hotLayer = bubble = nextBtn = prevBtn = dotsEl = null;
+    view = wrap = img = hotLayer = bubble = nextBtn = prevBtn = dotsEl = zoomBtn = null;
     pointers.clear(); pinch = pan = tapStart = null;
   }
   function resize() { fit(); }
