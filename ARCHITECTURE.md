@@ -172,3 +172,18 @@ go up by one. Never bump from your local copy — that is how 3.31.0 became
 sessions edit these), `voice/manifest.json` (both add words), `app.js`,
 `ARCHITECTURE.md`. Files under `objects/`, `scenes/`, `findus/`, `sfx/` and
 the `mode-*.js` modules belong to one session each and are safe.
+
+### Never reuse a version number the other session might have used
+
+On 26 November both sessions independently bumped to **3.33.0** within
+minutes of each other. GitHub Pages' CDN had already cached
+`config.js?v=3.33.0` from the first commit, so the second one arrived at a
+URL that was already in cache and the live app kept serving the older file —
+while `raw.githubusercontent.com` showed the new one. The whole point of the
+version string is to make the URL change, and it cannot do that if two
+people pick the same number.
+
+**Read the version off main immediately before you upload, not when you
+start work**, and if it has moved since you began, go above whatever is
+there now. If the live app disagrees with raw.githubusercontent for the same
+file, this is why: bump again rather than waiting for the cache.

@@ -201,7 +201,7 @@ window.CONFIG = {
   characterSrc: "character.webp",
   /* appended to the bundled image URL for the same reason every script URL
      carries one: a fresh index.html must never pair with a stale cached asset */
-  assetVersion: "?v=3.33.0",
+  assetVersion: "?v=3.34.0",
   characterAspect: 896/1195,
 
 
