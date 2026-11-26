@@ -1,8 +1,9 @@
 /* ===========================================================================
    mode-findus.js - "Find Us!": Sabrina's search-and-find book.
 
-   - An opening page introduces Mom, Dad, Sabrina and Indie, then seven
-     picture pages where she finds them.
+   - An opening page introduces Mom, Dad, Sabrina and Indie, then eight
+     picture pages where she finds them. Page 8 is the rose backyard with
+     Abuela, Grandpa and Aunt Lauren.
    - Pinch to zoom (1x-4x), one finger to pan while zoomed in.
    - Tapping a person says their name. Each name has a 4 second cooldown and
      there is a 1.2 second lock between any two names, so double and triple
@@ -16,7 +17,8 @@ window.ModeFindUs = (function () {
   "use strict";
 
   var DIR = "findus/";
-  var NAMES = { mom:"Mom", dad:"Dad", sabrina:"Sabrina", indie:"Indie" };
+  var NAMES = { mom:"Mom", dad:"Dad", sabrina:"Sabrina", indie:"Indie",
+                abuela:"Abuela", grandpa:"Grandpa", lauren:"Aunt Lauren" };
 
   /* boxes are in the 1254 x 1254 page image: [x0, y0, x1, y1] */
   var PAGES = [
@@ -33,7 +35,9 @@ window.ModeFindUs = (function () {
     { img:"06_christmas", hot:{
         mom:[248,435,388,798], indie:[495,830,625,1018], sabrina:[856,970,934,1158], dad:[910,780,1089,1168] } },
     { img:"07_daycare", hot:{
-        mom:[664,325,796,723], sabrina:[777,556,903,760], indie:[549,840,730,993], dad:[1097,418,1254,866] } }
+        mom:[664,325,796,723], sabrina:[777,556,903,760], indie:[549,840,730,993], dad:[1097,418,1254,866] } },
+    { img:"08_backyard", hot:{
+        abuela:[213,557,355,963], sabrina:[369,724,466,967], grandpa:[525,559,724,883], lauren:[854,626,1115,893] } }
   ];
   var SIZE = 1254;
   var COOLDOWN_MS = 4000, LOCK_MS = 1200, HOLD_MS = 700, MAX_ZOOM = 4;
