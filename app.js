@@ -40,36 +40,12 @@
      ?season=christmas on the URL forces one, so a season can be checked
      before its date arrives. A query string is not reachable from inside
      the app, so she cannot land on it by tapping. */
-  function seasonTheme() {
-    var forced = null;
-    try {
-      var q = /[?&]season=([a-z]+)/.exec(window.location.search || "");
-      if (q) forced = q[1];
-    } catch (e) {}
-    if (forced) return (CFG.themes && CFG.themes[forced]) ? forced : null;
-
-    var d = new Date();
-    var md = ("0" + (d.getMonth() + 1)).slice(-2) + "-" + ("0" + d.getDate()).slice(-2);
-    var win = (CFG.seasons || []).filter(function (w) {
-      return (w.from <= w.to)
-        ? (md >= w.from && md <= w.to)          /* inside one calendar year */
-        : (md >= w.from || md <= w.to);         /* a window that crosses New Year */
-    })[0];
-    return (win && CFG.themes[win.theme]) ? win.theme : null;
-  }
-
-  /* The menu as it stands today: the seasonal entry resolved to a real
-     theme, or dropped. Everything downstream reads this, not CONFIG.modes. */
-  function activeModes() {
-    var out = [];
-    (CFG.modes || []).forEach(function (m) {
-      if (!m.seasonal) { out.push(m); return; }
-      var t = seasonTheme();
-      if (t) out.push({ id:"season", theme:t, title:CFG.themes[t].title });
-    });
-    return out;
-  }
-  var MODES = activeModes();
+  /* Holiday tiles used to be ONE slot that followed the calendar and swapped
+     itself over. Jarred asked for the opposite after living with it: every
+     holiday is its own permanent tile and nothing ever disappears. So there
+     is no resolver here any more - CONFIG.modes is the menu, exactly as
+     written. ?season= is gone too; the tiles are simply all there. */
+  var MODES = (CFG.modes || []).slice();
 
   function modeFor(id) {
     var m = MODES.filter(function(x){ return x.id === id; })[0];
@@ -114,17 +90,21 @@
            (CFG.assetVersion || "") + '" alt="" draggable="false">';
   }
 
+  function themeTile(name) {
+    var th = CFG.themes && CFG.themes[name];
+    if (!th || !th.objects || !th.objects.length) return '';
+    return tileImg(th.objectDir.replace(/\/$/, "") + "/" + th.objects[0].f);
+  }
+
   var TILE_ART = {
     bubbles:   function(){ return window.Sprites.draw("bubble",{c1:"#9fe0f7",c2:"#3577c9"}); },
     /* the menu tile shows the same cut-out sticker the game uses */
     animals:   function(){ return tileImg("objects/animals/cat"); },
     balls:     function(){ return tileImg("objects/balls/soccer"); },
-    /* the seasonal tile shows the first sticker of whichever season is on */
-    season:    function(){
-      var t = seasonTheme(), th = t && CFG.themes[t];
-      if (!th || !th.objects || !th.objects.length) return '';
-      return tileImg(th.objectDir.replace(/\/$/, "") + "/" + th.objects[0].f);
-    },
+    /* each holiday tile shows the first sticker of its own set */
+    halloween:    function(){ return themeTile("halloween"); },
+    thanksgiving: function(){ return themeTile("thanksgiving"); },
+    christmas:    function(){ return themeTile("christmas"); },
     body:      function(){ return window.Sprites.draw("face"); },
     letters:   function(){ return '<svg viewBox="0 0 100 100" aria-hidden="true">' +
       '<text x="50" y="72" text-anchor="middle" font-family="system-ui,sans-serif" font-size="62" font-weight="800" fill="#4f9fd8">Aa</text></svg>'; },
@@ -165,7 +145,6 @@
 
   function buildMenu() {
     gridEl.innerHTML = "";
-    MODES = activeModes();          /* re-resolved in case the app was left open overnight */
     MODES.forEach(function (m) {
       var b = document.createElement("button");
       b.type = "button";

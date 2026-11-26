@@ -120,20 +120,12 @@ window.CONFIG = {
     ]}
   },
 
-  /* ---- the seasonal slot ------------------------------------------------
-     One tile that follows the calendar, instead of a holiday tab that sits
-     on the menu until somebody remembers to take it down. Halloween was
-     still there on 24 November; that is why this exists.
-
-     Dates are inclusive, MM-DD, read from the device's own clock, so the
-     tile turns over at midnight wherever she is. Outside every window the
-     tile is simply absent - an empty slot beats the wrong holiday. Add a
-     window here and the tile appears on its own; nothing else to change. */
-  seasons: [
-    { theme:"halloween",    from:"10-01", to:"11-01" },
-    { theme:"thanksgiving", from:"11-02", to:"11-30" },
-    { theme:"christmas",    from:"12-01", to:"12-26" }
-  ],
+  /* Holidays used to be ONE tile that followed the calendar and swapped
+     itself over - Halloween to Thanksgiving to Christmas - and vanished the
+     rest of the year. Jarred asked for the opposite once he had used it:
+     all three are permanent tiles in `modes` above and nothing disappears.
+     The `seasons` windows that drove the swap are gone; adding a holiday is
+     a theme plus a row in `modes`, same as any other tile. */
 
   /* ---- body parts: positions on the bundled character illustration ----
      Measured against character.webp (896x1195) and expressed as percentages,
@@ -364,7 +356,9 @@ window.CONFIG = {
     { id:"bubbles",   theme:"bubbles",   title:"Bubbles"   },
     { id:"animals",   theme:"animals",   title:"Animals"   },
     { id:"balls",     theme:"balls",     title:"Balls"     },
-    { id:"season",    seasonal:true,     title:"Holiday"   },
+    { id:"halloween",    theme:"halloween",    title:"Halloween"    },
+    { id:"thanksgiving", theme:"thanksgiving", title:"Thanksgiving" },
+    { id:"christmas",    theme:"christmas",    title:"Christmas"    },
     { id:"body",      title:"Me"        },
     { id:"letters",   title:"Letters"   },
     { id:"counting",  title:"Numbers"   },
